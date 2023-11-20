@@ -23,4 +23,4 @@ Inside context_files you will find the context of actions performed by channel p
 
 All this bot does is read chat, it does not send any data in the backend or anything like that. The idea is to have you running the bot and your friend you want to combine queues with also running the bot, reading each others chat with the same settings. Its done this way to avoid needing to send data over discord.
 
-In the zip is a start.bat file you should use to start the frxstzbot.exe file. There is also a frxstzbot.py file, this is source python file since this is an open source project. 
+In the zip is a start.bat file you should use to start the frxstzbot.exe file. There is also a frxstzbot.py file, this is source python file since this is an open source project.  
