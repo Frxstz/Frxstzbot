@@ -4,7 +4,9 @@ Frxstzbot is to be used with streamerbot (https://streamer.bot/). The way bop ha
 
 In the settings folder of the bot there are two files you can edit, one called channels, the other called queuebots.
 
-channels.txt must have at least 1 channel in it or else the bot will break, same with queuebots.txt. That being said we have tested this with 3 channels. We gave not seen the limit on channels yet.
+channels.txt must have at least 1 channel in it or else the bot will break, same with queuebots.txt. That being said we have tested this with 3 channels. We gave not seen the limit on channels yet. 
+
+CHECK NO WRAP / RAW FILE FOR PROPER EXAMPLE OF CHANNELS.TXT & QUEUEBOTS.TXT
 
 channels.txt - The channels you wish to use for the bot, place them with no skipped lines and case sensitive, Ex.
 frxstz_
@@ -20,6 +22,7 @@ Krausader
 lord_salad_bot
 
 Inside context_files you will find the context of actions performed by channel points that your streamerbot will respond to. These files are loaded with examples and are self explanatory. In these files you will add your context as well as your co-streamers.
+We do not endorse / encourage using Frxstzbot in chats that you dont have permission directly from the broadcaster in. 
 
 All this bot does is read chat, it does not send any data in the backend or anything like that. The idea is to have you running the bot and your friend you want to combine queues with also running the bot, reading each others chat with the same settings. Its done this way to avoid needing to send data over discord.
 
