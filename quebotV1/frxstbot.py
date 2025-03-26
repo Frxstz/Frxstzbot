@@ -1,5 +1,6 @@
 """
 Queue script made for integrating two chats into one "chat.log" File.
+Added Raffle like 2 years later
 Authors: frxstz on discord
          bop on discord
 
@@ -23,9 +24,12 @@ port             = 6667
 nickname         = 'frostqbot'
 token            = 'oauth:d0sktoon2hp5cycavtyog9nz2pshld'
 queueFile        = 'queue.txt'
+raffleFile       = 'raffle.txt'
 userQueueFile    = 'userqueue.txt'
+userRaffleFile   = 'userraffle.txt'
 channelQueueFile = 'channelqueue.txt'
-queueBots, joinQueue, pullQueue, leaveQueue, skipQueue, channels = [], [], [], [], [], []
+channelRaffleFile= 'channelraffle.txt'
+queueBots, channels, joinQueue, pullQueue, leaveQueue, skipQueue, joinRaffle, pullRaffle, leaveRaffle = [], [], [], [], [], [], [], [], []
 
 with open("chat.log", 'w') as f:
     pass
@@ -35,7 +39,10 @@ with open("chat.log", 'w') as f:
 # #Think of contexts as commands. WIthout them, this bot doesnt 
 # # know what to do
 def GetContextFileInfo():
-    global queueBots, joinQueue, pullQueue, leaveQueue, skipQueue, channels
+    global queueBots, channels, joinQueue, pullQueue, leaveQueue, skipQueue, joinRaffle, pullRaffle, leaveRaffle
+    path = os.path.join(DIR,'settings','queuebots.txt')
+    with open(path, "r") as f:
+        queueBots = f.read().splitlines()
     path = os.path.join(DIR,'settings','channels.txt')
     with open(path, "r") as f:
         channels = f.read().splitlines()
@@ -45,15 +52,23 @@ def GetContextFileInfo():
     path = os.path.join(DIR,'settings','context_files','pullqueuecontext.txt')
     with open(path, "r") as f:
         pullQueue = f.read().splitlines()
-    path = os.path.join(DIR,'settings','queuebots.txt')
-    with open(path, "r") as f:
-        queueBots = f.read().splitlines()
     path = os.path.join(DIR,'settings','context_files','skipqueuecontext.txt')
     with open(path, "r") as f:
         skipQueue = f.read().splitlines()
     path = os.path.join(DIR,'settings','context_files','leavequeuecontext.txt')
     with open(path, "r") as f:
         leaveQueue = f.read().splitlines()
+        #newcode
+    path = os.path.join(DIR,'settings','context_files','joinedrafflecontext.txt')
+    with open(path, "r") as f:
+        joinRaffle = f.read().splitlines()
+    path = os.path.join(DIR,'settings','context_files','pullrafflecontext.txt')
+    with open(path, "r") as f:
+        pullRaffle = f.read().splitlines()
+    path = os.path.join(DIR,'settings','context_files','leaverafflecontext.txt')
+    with open(path, "r") as f:
+        leaveRaffle = f.read().splitlines()
+    
 
 # Parses out the user from the chat response. Depends on the 
 # user being '@' in chat in order to correctly locate the correct user
@@ -93,6 +108,15 @@ with open("queue.txt", 'r') as f1:
                 f2.write(q.split(' - ')[0] + '\n')
                 f3.write(q.split(' - ')[1] + '\n')
 
+# use raffle.txt to fill in the userraffle & channelraffle txt files if data exists
+with open("raffle.txt", 'r') as f1:
+    with open("userraffle.txt", 'w') as f2:
+        with open("channelraffle.txt", 'w') as f3:
+            queue = f1.read().splitlines()
+            for q in queue:
+                f2.write(q.split(' - ')[0] + '\n')
+                f3.write(q.split(' - ')[1] + '\n')
+
 
 
 GetContextFileInfo() # gather context lists for use below
@@ -117,7 +141,17 @@ if not len(leaveQueue):
 
 if not len(skipQueue):
      print("WARNING! - skipqueuecontext.txt is empty. Skip Queue operations will be unsuccessful. See README for more information.")
-   
+
+if not len(joinRaffle):
+     print("WARNING! - joinrafflecontext.txt is empty. Join raffle operations will be unsuccessful. See README for more information.")
+
+if not len(pullRaffle):
+     print("WARNING! - pullrafflecontext.txt is empty. Pull raffle operations will be unsuccessful. See README for more information.")
+
+if not len(leaveRaffle):
+     print("WARNING! - leaverafflecontext.txt is empty. Leave raffle operations will be unsuccessful. See README for more information.")
+
+
 sock = socket.socket()
 sock.connect((server, port))
 sock.send(f"PASS {token}\n".encode('utf-8'))
@@ -166,7 +200,7 @@ while True:
                     exit()
 
                 # clear the queue files
-                if "has been cleared!!" in resp:
+                if "queue has been cleared!!" in resp:
                     with open(queueFile, 'w') as f:
                         pass 
                     with open(channelQueueFile, 'w') as f:
@@ -175,14 +209,26 @@ while True:
                         pass 
                     print("Queue files have been cleared... ...")
 
-
+                # clear the raffle files
+                if "raffle has been cleared!!" in resp:
+                    with open(raffleFile, 'w') as f:
+                        pass 
+                    with open(channelRaffleFile, 'w') as f:
+                        pass
+                    with open(userRaffleFile, 'w') as f:
+                        pass 
+                    print("Raffle files have been cleared... ...")
 
                 # MAIN LOGIC
-                # There are 4 blocks below
+                # There are 7 blocks below
                 # - Join Block - handle user joining the queue
                 # - Pull Block - handle user being pulled from the queue
-                # - Leave Block - habdle user leaving the queue voluntarily
+                # - Leave Block - handle user leaving the queue voluntarily
                 # - Skip Block - handle a player whose turn will be skipped in the queue
+                # RAFFLE BLOCKS
+                # - Join Block - handle user joining the raffle
+                # - Pull Block - handle a user being randomly pulled from the raffle
+                # - Leave Block - handle user leaving the raffle voluntarily
                 for j in joinQueue:
                     if (j in resp) and ('@' in resp.split("tmi.twitch.tv")[1]):
                         user = GetUser(resp)
@@ -279,6 +325,61 @@ while True:
                         ToFile(channelQueueFile, chqOutputString, "w") 
                                     
                         print(user + ' has been moved down one slot in the queue')
+                        break
+
+                # Raffle Blocks
+                for jr in joinRaffle:
+                    if (jr in resp) and ('@' in resp.split("tmi.twitch.tv")[1]):
+                        user = GetUser(resp)
+                        channelOfUser = GetChannelOfUser(resp)
+                        now = datetime.now().strftime("%I:%M:%S%p %Z")
+                        # Writing to files
+                        ToFile(raffleFile, user+" - "+channelOfUser+" - "+now+"\n", "a")
+                        ToFile(userRaffleFile, user+"\n", "a")
+                        ToFile(channelRaffleFile, channelOfUser+"\n", "a")
+                        print(user + ' has been added to the raffle file')
+                        break
+
+                for lr in leaveRaffle:
+                    if (lr in resp) and ('@' in resp.split("tmi.twitch.tv")[1]):
+                        user = GetUser(resp)
+                        with open(raffleFile, "r") as f:
+                            rlines = f.readlines()
+                        with open(userRaffleFile, "r") as f:
+                            urlines = f.readlines()                        
+                        with open(channelRaffleFile, "r") as f:
+                            chrlines = f.readlines()
+                        rOutputString, urOutputString, chrOutputString = '', '', ''
+                        for i in range(0, len(rlines)):
+                            if user.lower() != urlines[i].lower().strip("\n"):
+                                rOutputString = rOutputString + rlines[i]
+                                urOutputString = urOutputString + urlines[i]
+                                chrOutputString = chrOutputString + chrlines[i]
+                        ToFile(raffleFile, rOutputString, "w")
+                        ToFile(userRaffleFile, urOutputString, "w")
+                        ToFile(channelRaffleFile, chrOutputString, "w")
+                        print(user + ' has been removed from the raffle file')
+                        break
+
+                for pr in pullRaffle:
+                    if (pr in resp) and ('@' in resp.split("tmi.twitch.tv")[1]):
+                        user = GetUser(resp)
+                        with open(raffleFile, "r") as f:
+                            rlines = f.readlines()
+                        with open(userRaffleFile, "r") as f:
+                            urlines = f.readlines()                        
+                        with open(channelRaffleFile, "r") as f:
+                            chrlines = f.readlines()
+                        rOutputString, urOutputString, chrOutputString = '', '', ''
+                        for i in range(0, len(rlines)):
+                            if user.lower() != urlines[i].lower().strip("\n"):
+                                rOutputString = rOutputString + rlines[i]
+                                urOutputString = urOutputString + urlines[i]
+                                chrOutputString = chrOutputString + chrlines[i]
+                        ToFile(raffleFile, rOutputString, "w")
+                        ToFile(userRaffleFile, urOutputString, "w")
+                        ToFile(channelRaffleFile, chrOutputString, "w")
+                        print(user + ' has been removed from the raffle file (won the raffle)')
                         break
         except:
             print("ERROR/////", resp)
