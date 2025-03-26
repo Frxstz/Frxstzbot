@@ -22,7 +22,9 @@ DIR              = os.getcwd()
 server           = 'irc.chat.twitch.tv'
 port             = 6667
 nickname         = 'frostqbot'
-token            = 'oauth:d0sktoon2hp5cycavtyog9nz2pshld'
+path = os.path.join(DIR,'settings','token.txt')
+with open(path, "r") as f:
+    token = f.read().splitlines()
 queueFile        = 'queue.txt'
 raffleFile       = 'raffle.txt'
 userQueueFile    = 'userqueue.txt'
