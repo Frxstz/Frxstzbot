@@ -1,0 +1,54 @@
+Streamerbot Action is executed
+C# code is activated
+	Defines path
+	        string queueFilePath = args["queueFilePath"].ToString();
+	        var queueName = CPH.GetGlobalVar<string>("QueueName", true);
+	        var usersInQueue = File.ReadAllLines(@queueFilePath);
+	        var count = 0;
+	        foreach (var user in usersInQueue)
+	        {
+	        	count++;
+	        }
+	Set our # of users in queue to chck if its not 0
+	        if (count > 0)
+	        {
+	Just uses user[0] to get the first, set that to be any number from 0 to count
+	            CPH.SendMessage("@" + usersInQueue[0] + ", you're up next!");
+	        }
+	        else
+	        {
+	validation
+	            CPH.SendMessage(queueName + " is empty!!");
+	        }
+Then reads that user, parse the user, remove them from the raffle file
+	Resuse the leave code
+	
+
+Needs a rebroadcast, so that it shows in each individual chat.
+
+	1 = broadcast (blah blah has won the raffle)
+	0 = rebroadcast (idc just different from broadcast so that it dosnt get read as context, just add a chanl emote to the end)
+	
+	action on krausschat (kraus pushes raffle pull button)
+	
+	krausbot: posts 1, reads bops 0 = no action, reads frosts 0 = no action, reads sares 0 = no action
+	bopbot: reads kraus's 1 = posts 0, reads frosts 0 = no action, reads sares 0 = no action
+	frostbot: reads kraus's 1 = posts 0, reads bops 0 = no action, reads sares 0 = no action
+	sarebot: reads kraus's 1 = posts 0, reads bops 0 = no action, reads frosts 0 = no action 
+	
+The reason I think I need to do this, is because if it was all 1, it could read 1, then post 1 as a result. And because it reads 1, it will post 1, then the other chats will read 1, then post 1, then the og chat will read 1 then post 1. big bad loop. But this way if they only post 0 on 1, and only 1 1 is ever posted the rest should echo a 0. 
+
+So it can read chat. In python, python can't send messages to chat. I need a way to get the data from chat A and have it rebroadcast in chat B, if the message is what we want, from the right user.
+
+Im thinking that has to be:
+
+	Python: responsible for removing the winning user from raffle.txt
+		Reads resp of broadcast, then acts as if that’s a streamerbot action, removes user from raffle.txt, so it needs to be in context
+	C#: responsible for putting the user that won in chat, from a different chat. 
+		No access to resp, needs to read chat, from botlist, if it’s the broadcasted context, parses user, then says the user winner in a different way then to the context
+		
+WHY THE FUCK ARE MY HANDS SO COLD
+	
+
+
+
