@@ -22,9 +22,10 @@ DIR              = os.getcwd()
 server           = 'irc.chat.twitch.tv'
 port             = 6667
 nickname         = 'frostqbot'
-path = os.path.join(DIR,'settings','token.txt')
+path = os.path.join(DIR,'quebotV1','settings','token.txt')
 with open(path, "r") as f:
     token = f.read().splitlines()
+token = token[0]
 queueFile        = 'queue.txt'
 raffleFile       = 'raffle.txt'
 userQueueFile    = 'userqueue.txt'
@@ -42,32 +43,32 @@ with open("chat.log", 'w') as f:
 # # know what to do
 def GetContextFileInfo():
     global queueBots, channels, joinQueue, pullQueue, leaveQueue, skipQueue, joinRaffle, pullRaffle, leaveRaffle
-    path = os.path.join(DIR,'settings','queuebots.txt')
+    path = os.path.join(DIR,'quebotV1','settings','queuebots.txt')
     with open(path, "r") as f:
         queueBots = f.read().splitlines()
-    path = os.path.join(DIR,'settings','channels.txt')
+    path = os.path.join(DIR,'quebotV1','settings','channels.txt')
     with open(path, "r") as f:
         channels = f.read().splitlines()
-    path = os.path.join(DIR,'settings','context_files','joinedqueuecontext.txt')
+    path = os.path.join(DIR,'quebotV1','settings','context_files','joinedqueuecontext.txt')
     with open(path, "r") as f:
         joinQueue = f.read().splitlines()
-    path = os.path.join(DIR,'settings','context_files','pullqueuecontext.txt')
+    path = os.path.join(DIR,'quebotV1','settings','context_files','pullqueuecontext.txt')
     with open(path, "r") as f:
         pullQueue = f.read().splitlines()
-    path = os.path.join(DIR,'settings','context_files','skipqueuecontext.txt')
+    path = os.path.join(DIR,'quebotV1','settings','context_files','skipqueuecontext.txt')
     with open(path, "r") as f:
         skipQueue = f.read().splitlines()
-    path = os.path.join(DIR,'settings','context_files','leavequeuecontext.txt')
+    path = os.path.join(DIR,'quebotV1','settings','context_files','leavequeuecontext.txt')
     with open(path, "r") as f:
         leaveQueue = f.read().splitlines()
         #newcode
-    path = os.path.join(DIR,'settings','context_files','joinedrafflecontext.txt')
+    path = os.path.join(DIR,'quebotV1','settings','context_files','joinedrafflecontext.txt')
     with open(path, "r") as f:
         joinRaffle = f.read().splitlines()
-    path = os.path.join(DIR,'settings','context_files','pullrafflecontext.txt')
+    path = os.path.join(DIR,'quebotV1','settings','context_files','pullrafflecontext.txt')
     with open(path, "r") as f:
         pullRaffle = f.read().splitlines()
-    path = os.path.join(DIR,'settings','context_files','leaverafflecontext.txt')
+    path = os.path.join(DIR,'quebotV1','settings','context_files','leaverafflecontext.txt')
     with open(path, "r") as f:
         leaveRaffle = f.read().splitlines()
     
@@ -102,7 +103,8 @@ def ToFile(file, data, type):
 
 
 # use queue.txt to fill in the userqueue & channelqueue txt files if data exists
-with open("queue.txt", 'r') as f1:
+path = os.path.join(DIR,'quebotV1','queue.txt')
+with open(path, 'r') as f1:
     with open("userqueue.txt", 'w') as f2:
         with open("channelqueue.txt", 'w') as f3:
             queue = f1.read().splitlines()
@@ -111,7 +113,8 @@ with open("queue.txt", 'r') as f1:
                 f3.write(q.split(' - ')[1] + '\n')
 
 # use raffle.txt to fill in the userraffle & channelraffle txt files if data exists
-with open("raffle.txt", 'r') as f1:
+path = os.path.join(DIR,'quebotV1','raffle.txt')
+with open(path, 'r') as f1:
     with open("userraffle.txt", 'w') as f2:
         with open("channelraffle.txt", 'w') as f3:
             queue = f1.read().splitlines()
